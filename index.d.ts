@@ -3,31 +3,51 @@
 export = Fuse;
 export as namespace Fuse;
 
-declare class Fuse {
-  constructor(list: any[], options?: Fuse.FuseOptions)
-  search<T>(pattern: string): T[];
-  search(pattern: string): any[];
+declare class Fuse<T> {
+	constructor(list: T[], options?: Fuse.Options<T>);
+	search(pattern: string): T[];
 }
 
 declare namespace Fuse {
-  export interface FuseOptions {
-    id?: string;
-    caseSensitive?: boolean;
-    include?: string[];
-    shouldSort?: boolean;
-    searchFn?: any;
-    sortFn?: (a: { score: number }, b: { score: number }) => number;
-    getFn?: (obj: any, path: string) => any;
-    keys?: string[] | { name: string; weight: number }[];
-    verbose?: boolean;
-    tokenize?: boolean;
-    tokenSeparator?: RegExp;
-    matchAllTokens?: boolean;
-    location?: number;
-    distance?: number;
-    threshold?: number;
-    maxPatternLength?: number;
+	interface SearchFnConstructor {
+		new (pattern: string, options?: SearchOptions): SearchFn;
+	}
+
+	interface SearchFn {
+		search(text: string): SearchResult;
+	}
+
+	interface SearchResult {
+		readonly isMatch: boolean;
+		readonly score: number;
+	}
+
+	interface SearchOptions {
+		location?: number;
+		distance?: number;
+		threshold?: number;
+		maxPatternLength?: number;
+	}
+
+	interface Options<T> {
+		id?: string;
+		caseSensitive?: boolean;
+		include?: string[];
+		shouldSort?: boolean;
+		searchFn?: SearchFnConstructor;
+		sortFn?: (a: {score: number}, b: {score: number}) => number;
+		keys?: string[] | { name:string; weight:number} [];
+		verbose?:boolean;
+		tokenize?: boolean;
+		tokenSeparator? : RegExp;
+		matchAllTokens?: boolean;
+		location?: number;
+		distance?: number;
+		threshold?: number;
+		maxPatternLength?: number;
+		includeScore?: boolean;
+		getFn?: (obj: T, path: string) => string;
     minMatchCharLength?: number;
     findAllMatches?: boolean;
-  }
+	}
 }
